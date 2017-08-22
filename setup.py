@@ -15,4 +15,5 @@ setup(name='cfpredict',
       author_email='cskksdfklpz@gmail.com',
       license='MIT',
       packages=['cfpredict'],
+      include_package_data=True,
       zip_safe=False)
