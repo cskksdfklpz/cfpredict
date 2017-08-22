@@ -1,4 +1,6 @@
 #!/usr/bin/env python
 
-class ann():
+
+def ann():
+	print "This is ann!"
 	

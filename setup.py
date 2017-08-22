@@ -16,4 +16,9 @@ setup(name='cfpredict',
       license='MIT',
       packages=['cfpredict'],
       include_package_data=True,
+      test_suite='nose.collector',
+      tests_require=['nose'],
+      entry_points = {
+        'console_scripts': ['info=cfpredict.command_line:main'],
+     },
       zip_safe=False)
