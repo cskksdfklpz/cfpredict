@@ -1,12 +1,37 @@
 #!/usr/bin/env python
 
+import pandas as pd
+import numpy as np
+
 class cfpredict:
     """
     The base class of the predictor of the commodity futures, with
     the properties of
-
     
-        
+    
+    Attributes:
+        length: the length of the time series data
+    	is_data_loaded: the flag of boolean type to mark if the data is loaded
+    	ts: the time series with the type of pandas dataframe
+    
+    Methods:
+    	load_data: take the dataframe of the time series as the argument
+    	clear_data: clear the time series so you can decrease the size of the object
+    	return_rate_curve: return the data of the return rate of the specific data term
+    	    
+    	    predict_time: the time interval of the return rate, default by 5
+    	    start:  the start time, default by 0
+    	    end: the end time, default by -1
+    	    step: the sampling interval, default by 1
+    	    label: the data term of the OLHC price data, can be
+    	    
+    	        'open': open price
+    	        'low': lowest price
+    	        'high': highest price
+    	        'close': close price
+    	
+    	predict: method to predict the return rate, haing no idea how to do it for now
+    
     """ 
     
     def __init__(self):
