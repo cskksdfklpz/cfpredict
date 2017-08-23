@@ -7,7 +7,7 @@ def readme():
 from setuptools import setup
 
 setup(name='cfpredict',
-      version='0.1',
+      version='0.2',
       description='fine-grained prediction of commodity futures price',
       long_description=readme(),
       url='http://github.com/cskksdfklpz',
