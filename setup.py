@@ -21,8 +21,4 @@ setup(name='cfpredict',
       entry_points = {
         'console_scripts': ['info=cfpredict.command_line:main'],
      },
-     install_requires=[
-          'pandas',
-          'numpy',
-      ],
       zip_safe=False)

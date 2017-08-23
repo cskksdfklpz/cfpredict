@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 from .cfpredict import cfpredict
+import numpy as np
+import pandas as pd
 
 class cfvma(cfpredict):
     
-    """
+    '''
     The sub class of the predictor of the commodity futures, with
     the strayegy of VMA and the properties of
     
@@ -53,16 +55,16 @@ class cfvma(cfpredict):
     	    label: the data term of the OLHC price data, can be
     	
     	    Return:
-    	    
+    	    f: index of the feature 1-l/s
+            ratio: return rate
+            f_gc: index of the feature where golden cross occurs
+            r_gc: return rate where golden cross occurs
+            f_dc: index of the feature where dead cross occurs
+            r_dc: return rate where dead cross occurs
     
     	predict: method to predict the return rate, haing no idea how to do it for now
-        f: index of the feature 1-l/s
-        ratio: return rate
-        f_gc: index of the feature where golden cross occurs
-        r_gc: return rate where golden cross occurs
-        f_dc: index of the feature where dead cross occurs
-        r_dc: return rate where dead cross occurs
-    """ 
+       
+    '''
     
     def VMA(self, n, ts, vol):
         vma = [0.0]*len(ts)
@@ -107,7 +109,7 @@ class cfvma(cfpredict):
                 f_gc.append(f[i])
                 r_gc.append(ratio[i])
             elif s[i+1] < l[i+1] and s[i-1] > l[i-1] and s[i+1] < s[i-1]:
-                f_dc.append(f1[i])
+                f_dc.append(f[i])
                 r_dc.append(ratio[i])
         
         return f, ratio, f_gc, r_gc, f_dc, r_dc

@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 class cfpredict:
-    """
+    '''
     The base class of the predictor of the commodity futures, with
     the properties of
     
@@ -32,7 +32,7 @@ class cfpredict:
     	
     	predict: method to predict the return rate, haing no idea how to do it for now
     
-    """ 
+    '''
     
     def __init__(self):
         self.length = 0
