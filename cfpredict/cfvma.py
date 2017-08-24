@@ -63,9 +63,10 @@ class cfvma(cfpredict):
        
     '''
         
-    def set_param(self, short_term, long_term):
+    def set_param(self, short_term, long_term, e=0):
         self.s = short_term
         self.l = long_term
+        self.e = e
         
         price = self.ts['close'][self.start:self.end:self.step]
         volume = self.ts['vol'][self.start:self.end:self.step]
@@ -124,11 +125,11 @@ class cfvma(cfpredict):
         short selling signal for positive value and bull position signal for negative value 
         '''
         
-        if t == 0:
+        if t == 0 or t >= (self.end-self.start)/self.step-1:
             return 0
-        elif self.vma_s[t-1] > self.vma_l[t-1] and self.vma_s[t] < self.vma_l[t]: # dead cross
+        elif self.vma_s[t-1] - self.vma_l[t-1] > self.e and self.vma_s[t+1] - self.vma_l[t+1] < -self.e and self.vma_s[t-1] > self.vma_s[t+1]: # dead cross
             return 1
-        elif self.vma_s[t-1] < self.vma_l[t-1] and self.vma_s[t] > self.vma_l[t]: # golden cross
+        elif self.vma_s[t-1] - self.vma_l[t-1] < -self.e and self.vma_s[t+1] - self.vma_l[t+1] > self.e and self.vma_s[t-1] < self.vma_s[t+1]: # golden cross
             return -1
         else:
             return 0

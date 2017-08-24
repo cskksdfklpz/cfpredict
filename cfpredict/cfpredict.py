@@ -89,7 +89,7 @@ class cfpredict:
         capital = 0
         position = 1
         
-        ts_sampling = self.ts['close'][self.start:self.end:self.step]
+        ts_sampling = np.array(self.ts['close'][self.start:self.end:self.step])
     
         RR = [0.0]*len(ts_sampling)
         trade = [0.0]*len(RR)        
