@@ -88,16 +88,18 @@ class cfpredict:
         
         capital = 0
         position = 1
+        
+        ts_sampling = self.ts['close'][self.start:self.end:self.step]
     
-        RR = [0.0]*len(self.ts['close'][self.start:self.end:self.step])
+        RR = [0.0]*len(ts_sampling)
         trade = [0.0]*len(RR)        
         for i in range(len(RR)):
             
             s = self.get_trade_signal(i)  # short selling
             position -= s
-            capital += s * self.ts['close'][i]
+            capital += s * ts_sampling[i]
             
-            RR[i] = 1.0*(capital + position * self.ts['close'][i])/self.ts['close'][self.start]
+            RR[i] = 1.0*(capital + position * ts_sampling[i])/ts_sampling[0]
             trade[i] = s
             
         return RR, trade
