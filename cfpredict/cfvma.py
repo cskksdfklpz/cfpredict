@@ -47,9 +47,6 @@ class cfvma(cfpredict):
     	return_ratio_distribution_curve: return the data of the return rate of the specific data term
     	    Arguments:
     	    predict_time: the time interval of the return rate, default by 5
-    	    start:  the start time, default by 0
-    	    end: the end time, default by -1
-    	    step: the sampling interval, default by 1
     	    short_term: the short term of the short VMA
     	    long_term: the long term of the long VMA
     	    label: the data term of the OLHC price data, can be
@@ -65,6 +62,15 @@ class cfvma(cfpredict):
     	predict: method to predict the return rate, haing no idea how to do it for now
        
     '''
+        
+    def set_param(self, short_term, long_term):
+        self.s = short_term
+        self.l = long_term
+        
+        price = self.ts['close'][self.start:self.end:self.step]
+        volume = self.ts['vol'][self.start:self.end:self.step]
+        self.vma_s = self.VMA(self.s, price, volume)
+        self.vma_l = self.VMA(self.l, price, volume)
     
     def VMA(self, n, ts, vol):
         vma = [0.0]*len(ts)
@@ -73,29 +79,25 @@ class cfvma(cfpredict):
             vma[i] = np.dot(w, ts[i+1-n:i+1])/np.sum(w)
         return vma
     
-    def double_VMA_curve(self, start=0, end=-1, step=1, short_term=12, long_term=26, label='mean'):
+    def double_VMA_curve(self, label='mean'):
         
         assert self.is_data_loaded == True, "Data hasn't been loaded yet! Try to use .load_data method to load the data"
         
-        if end == -1:
-            end = self.length
+        price = self.ts[label][self.start:self.end:self.step]
+        volume = self.ts['vol'][self.start:self.end:self.step]
+        vma_s = self.VMA(self.s, price, volume)
+        vma_l = self.VMA(self.l, price, volume)
         
-        price = self.ts[label][start:end:step]
-        volume = self.ts['vol'][start:end:step]
-        vma_s = self.VMA(short_term, price, volume)
-        vma_l = self.VMA(long_term, price, volume)
-        
-        return vma_s[long_term:len(volume)], vma_l[long_term:len(volume)]
+        return vma_s[self.l:len(volume)], vma_l[self.l:len(volume)]
     
-    def return_ratio_distribution_curve(self, predict_time=5, start=0, end=-1, step=1, short_term=12, long_term=26, label='mean'):
+    def return_ratio_distribution_curve(self, predict_time=5, label='mean'):
         
+        s, l = self.double_VMA_curve(label)
         
-        s, l = self.double_VMA_curve(start, end, step, short_term, long_term, label)
-        
-        ratio = self.return_rate_curve(predict_time, start, end, step, label)[0:len(s)]
+        ratio = self.return_rate_curve(predict_time, label)[0:len(s)]
         
         f = [0.0]*len(s)
-        for i in range(long_term, len(f)):
+        for i in range(self.l, len(f)):
             f[i] = (l[i]-s[i])/(1.0*s[i])
 
         f_gc = []
@@ -104,7 +106,7 @@ class cfvma(cfpredict):
         f_dc = []
         r_dc = []
 
-        for i in range(long_term+1, len(f)-1):
+        for i in range(self.l+1, len(f)-1):
             if s[i+1] > l[i+1] and s[i-1] < l[i-1] and s[i+1] > s[i-1]:
                 f_gc.append(f[i])
                 r_gc.append(ratio[i])
@@ -113,3 +115,21 @@ class cfvma(cfpredict):
                 r_dc.append(ratio[i])
         
         return f, ratio, f_gc, r_gc, f_dc, r_dc
+    
+    
+    
+    def get_trade_signal(self, t):
+        
+        '''
+        short selling signal for positive value and bull position signal for negative value 
+        '''
+        
+        if t == 0:
+            return 0
+        elif self.vma_s[t-1] > self.vma_l[t-1] and self.vma_s[t] < self.vma_l[t]: # dead cross
+            return 1
+        elif self.vma_s[t-1] < self.vma_l[t-1] and self.vma_s[t] > self.vma_l[t]: # golden cross
+            return -1
+        else:
+            return 0
+    
